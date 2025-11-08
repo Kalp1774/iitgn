@@ -36,6 +36,7 @@ model Employee {
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
   attendances Attendance[]
+  leaves      Leave[]
 }
 
 model Attendance {
@@ -52,5 +53,23 @@ model Attendance {
 
   @@index([employeeId])
   @@unique([employeeId, date])
+}
+
+model Leave {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId Int
+  startDate  DateTime
+  endDate    DateTime
+  type       String
+  reason     String?
+  status     String   @default("PENDING")
+  appliedAt  DateTime @default(now())
+  reviewedAt DateTime?
+  reviewedBy Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([employeeId])
 }
 

@@ -5,6 +5,7 @@ import healthRoute from "./routes/health.route.js";
 import authRoutes from "./routes/auth.routes.js";
 import employeeRoutes from "./routes/employee.routes.js";
 import attendanceRoutes from "./routes/attendance.routes.js";
+import leaveRoutes from "./routes/leave.routes.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use("/health", healthRoute);
 app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/leaves", leaveRoutes);
 
 export default app;
 

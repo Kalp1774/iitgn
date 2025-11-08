@@ -1,4 +1,4 @@
-# HRMS Backend – Part 3: Attendance Module
+# HRMS Backend – Part 4: Leave Management Module
 
 ## Setup
 
@@ -25,11 +25,15 @@ docker-compose exec backend npx prisma migrate dev --name add_employee
 # Add Attendance model migration
 docker-compose exec backend npx prisma migrate dev --name add_attendance
 
+# Add Leave model migration
+docker-compose exec backend npx prisma migrate dev --name add_leave_module
+
 # Or run all commands in one go:
 docker-compose up -d postgres
 docker-compose exec backend npx prisma migrate dev --name init_auth
 docker-compose exec backend npx prisma migrate dev --name add_employee
 docker-compose exec backend npx prisma migrate dev --name add_attendance
+docker-compose exec backend npx prisma migrate dev --name add_leave_module
 ```
 
 **Option B: Run migrations locally (if you have Node.js installed)**
@@ -40,6 +44,7 @@ npx prisma generate
 npx prisma migrate dev --name init_auth
 npx prisma migrate dev --name add_employee
 npx prisma migrate dev --name add_attendance
+npx prisma migrate dev --name add_leave_module
 ```
 
 ### 3. Start the backend
@@ -155,6 +160,63 @@ docker-compose up --build
   # Get attendance for a specific date
   Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/date?date=2025-11-08" `
     -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+### Leave Management (All endpoints require JWT authentication)
+
+- `POST /api/leaves` - Apply for leave
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves" `
+    -Method POST `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"employeeId":1,"startDate":"2025-11-09","endDate":"2025-11-11","type":"SICK","reason":"Fever"}'
+  ```
+
+- `GET /api/leaves` - Get all leave requests (with optional filters)
+  ```powershell
+  # Get all leaves
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get pending leaves only
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves?status=PENDING" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get leaves by type
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves?type=SICK" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/leaves/:id` - Get leave request by ID
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves/1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/leaves/employee/:employeeId` - Get leave requests for an employee
+  ```powershell
+  # Get all leaves for employee
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves/employee/1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get pending leaves only
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves/employee/1?status=PENDING" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `PUT /api/leaves/:id/review` - Approve or reject leave (HR/Admin)
+  ```powershell
+  # Approve leave
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves/1/review" `
+    -Method PUT `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"status":"APPROVED","reviewedBy":1}'
+
+  # Reject leave
+  Invoke-RestMethod -Uri "http://localhost:4000/api/leaves/1/review" `
+    -Method PUT `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"status":"REJECTED","reviewedBy":1}'
   ```
 
 ## User Roles
