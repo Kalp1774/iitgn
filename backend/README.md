@@ -8,6 +8,30 @@
 cp .env.example .env
 ```
 
+### 1.5. Create test users (optional but recommended)
+
+After setting up the database, you can create test users with pre-hashed passwords:
+
+**Option A: Using Node.js script (recommended)**
+```bash
+npm run seed:users
+```
+
+**Option B: Using PowerShell script (Windows)**
+```powershell
+.\scripts\seed-users.ps1
+```
+
+**Option C: Using Bash script (Linux/Mac)**
+```bash
+bash scripts/seed-users.sh
+```
+
+This will create three test accounts:
+- **Admin**: `admin@example.com` / `admin123`
+- **HR**: `hr@example.com` / `hr123`
+- **Employee**: `employee@example.com` / `emp123`
+
 ### 2. Run Prisma migrations
 
 **Option A: Run migrations inside Docker container**
