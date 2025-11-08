@@ -9,7 +9,9 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed:users": "tsx scripts/seed-users.js"
+    "seed:users": "tsx scripts/seed-users.js",
+    "seed:employees": "tsx scripts/seed-employees.js",
+    "seed:all": "tsx scripts/seed-users.js && tsx scripts/seed-employees.js"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",

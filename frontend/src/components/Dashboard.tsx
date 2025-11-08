@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import Layout from './Layout';
 import { employeeAPI, payrollAPI, attendanceAPI } from '../services/api';
 
 const Dashboard = () => {
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     employees: 0,
@@ -41,136 +40,78 @@ const Dashboard = () => {
     {
       title: 'Employees',
       value: stats.employees,
-      color: 'bg-blue-500',
+      color: '#875A7B',
+      bgGradient: 'linear-gradient(135deg, #875A7B 0%, #6d4a63 100%)',
       onClick: () => navigate('/employees'),
     },
     {
       title: 'Payrolls',
       value: stats.payrolls,
-      color: 'bg-green-500',
+      color: '#FFC107',
+      bgGradient: 'linear-gradient(135deg, #FFC107 0%, #e0a800 100%)',
       onClick: () => navigate('/payroll'),
     },
     {
-      title: 'Today\'s Attendance',
+      title: "Today's Attendance",
       value: stats.attendance,
-      color: 'bg-purple-500',
+      color: '#00A09D',
+      bgGradient: 'linear-gradient(135deg, #00A09D 0%, #008b88 100%)',
       onClick: () => navigate('/attendance'),
     },
   ];
 
-  // Admin/HR only cards
-  const adminCards = [
-    {
-      title: 'Admin Panel',
-      value: 'Manage',
-      color: 'bg-red-500',
-      onClick: () => navigate('/employees'),
-      description: 'Manage employees and system settings',
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-800">HRMS Dashboard</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">
-                Welcome, {user?.name} ({user?.role})
-              </span>
-              <button
-                onClick={logout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+    <Layout>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">Dashboard Overview</h2>
+          <p className="text-gray-500 mt-2">Welcome back! Here's what's happening today.</p>
         </div>
-      </nav>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Overview</h2>
-          
-          {loading ? (
-            <div className="text-center py-12">Loading...</div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-6">
-                {statCards.map((card, index) => (
-                  <div
-                    key={index}
-                    onClick={card.onClick}
-                    className={`${card.color} overflow-hidden shadow rounded-lg cursor-pointer transform transition hover:scale-105`}
-                  >
-                    <div className="p-5">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0">
-                          <div className="text-white text-4xl font-bold">
-                            {card.value}
-                          </div>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                          <dl>
-                            <dt className="text-sm font-medium text-white truncate">
-                              {card.title}
-                            </dt>
-                          </dl>
-                        </div>
-                      </div>
+        {loading ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#875A7B' }}></div>
+            <p className="mt-4 text-gray-500">Loading...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {statCards.map((card, index) => (
+              <div
+                key={index}
+                onClick={card.onClick}
+                className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden group"
+                style={{ borderLeft: `4px solid ${card.color}` }}
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">{card.title}</p>
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity"
+                      style={{ backgroundColor: card.color }}
+                    >
+                      <div 
+                        className="w-6 h-6 rounded"
+                        style={{ backgroundColor: card.color }}
+                      ></div>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Admin/HR only section */}
-              {(user?.role === 'ADMIN' || user?.role === 'HR') && (
-                <div className="mt-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Admin & HR Tools
-                  </h3>
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                    {adminCards.map((card, index) => (
-                      <div
-                        key={index}
-                        onClick={card.onClick}
-                        className={`${card.color} overflow-hidden shadow rounded-lg cursor-pointer transform transition hover:scale-105`}
-                      >
-                        <div className="p-5">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                              <div className="text-white text-2xl font-bold">
-                                {card.value}
-                              </div>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                              <dl>
-                                <dt className="text-sm font-medium text-white truncate">
-                                  {card.title}
-                                </dt>
-                                <dd className="text-xs text-white opacity-75">
-                                  {card.description}
-                                </dd>
-                              </dl>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                  <p className="text-4xl font-bold" style={{ color: card.color }}>
+                    {card.value}
+                  </p>
+                  <div className="mt-4 flex items-center text-xs font-medium text-gray-500">
+                    <span>View details</span>
+                    <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
-      </main>
-    </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Layout>
   );
 };
 
 export default Dashboard;
-

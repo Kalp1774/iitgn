@@ -32,6 +32,22 @@ This will create three test accounts:
 - **HR**: `hr@example.com` / `hr123`
 - **Employee**: `employee@example.com` / `emp123`
 
+### 1.6. Seed employees (optional but recommended)
+
+After creating users, you can seed some test employees:
+
+```bash
+npm run seed:employees
+```
+
+Or seed both users and employees at once:
+
+```bash
+npm run seed:all
+```
+
+This will create 6 sample employees with different departments and roles.
+
 ### 2. Run Prisma migrations
 
 **Option A: Run migrations inside Docker container**
