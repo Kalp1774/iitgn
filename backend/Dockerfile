@@ -1,19 +1,14 @@
-FROM node:20-alpine
+# use Debian-based node so esbuild native binary works
+FROM node:20-bullseye
 
 WORKDIR /usr/src/app
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
+# copy package manifests and install dependencies (npm install works without lockfile)
+COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copy source code
+# copy app source
 COPY . .
 
-# Expose port
 EXPOSE 4000
-
-# Default command (can be overridden in docker-compose.yml)
 CMD ["npm", "run", "dev"]
-

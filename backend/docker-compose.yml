@@ -18,15 +18,17 @@ services:
     command: npm run dev
     volumes:
       - .:/usr/src/app
+      - /usr/src/app/node_modules
     working_dir: /usr/src/app
     ports:
       - "4000:4000"
     environment:
       DATABASE_URL: ${DATABASE_URL}
       PORT: ${PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     depends_on:
       - postgres
 
 volumes:
   pgdata:
-
