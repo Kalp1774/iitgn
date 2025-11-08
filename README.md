@@ -1,5 +1,11 @@
 # HRMS - Human Resources Management System
 
+##Team: Brahmos
+Kalp Modi
+Nevil Dhaduk
+Dhruvi Radadiya
+Dhwani Vyas
+
 A comprehensive full-stack Human Resources Management System built with React, Node.js, Express, and PostgreSQL. Features a modern Odoo-inspired UI with complete employee management, attendance tracking, leave management, and payroll processing capabilities.
 
 ## 🚀 Features
