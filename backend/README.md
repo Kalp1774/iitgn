@@ -1,4 +1,4 @@
-# HRMS Backend – Part 2: Employee CRUD Module
+# HRMS Backend – Part 3: Attendance Module
 
 ## Setup
 
@@ -22,10 +22,14 @@ docker-compose exec backend npx prisma migrate dev --name init_auth
 # Add Employee model migration
 docker-compose exec backend npx prisma migrate dev --name add_employee
 
+# Add Attendance model migration
+docker-compose exec backend npx prisma migrate dev --name add_attendance
+
 # Or run all commands in one go:
 docker-compose up -d postgres
 docker-compose exec backend npx prisma migrate dev --name init_auth
 docker-compose exec backend npx prisma migrate dev --name add_employee
+docker-compose exec backend npx prisma migrate dev --name add_attendance
 ```
 
 **Option B: Run migrations locally (if you have Node.js installed)**
@@ -35,6 +39,7 @@ npm install
 npx prisma generate
 npx prisma migrate dev --name init_auth
 npx prisma migrate dev --name add_employee
+npx prisma migrate dev --name add_attendance
 ```
 
 ### 3. Start the backend
@@ -109,6 +114,46 @@ docker-compose up --build
   ```powershell
   Invoke-RestMethod -Uri "http://localhost:4000/api/employees/1" `
     -Method DELETE `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+### Attendance Management (All endpoints require JWT authentication)
+
+- `POST /api/attendance/checkin` - Check-in for an employee
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/checkin" `
+    -Method POST `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"employeeId":1}'
+  ```
+
+- `POST /api/attendance/checkout` - Check-out for an employee
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/checkout" `
+    -Method POST `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"employeeId":1}'
+  ```
+
+- `GET /api/attendance/employee/:employeeId` - Get attendance records for an employee
+  ```powershell
+  # Get all records
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/employee/1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get records with date range
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/employee/1?from=2025-11-01&to=2025-11-30" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/attendance/date` - Get attendance records for a specific date
+  ```powershell
+  # Get today's attendance
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/date" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get attendance for a specific date
+  Invoke-RestMethod -Uri "http://localhost:4000/api/attendance/date?date=2025-11-08" `
     -Headers @{ "Authorization" = "Bearer $token" }
   ```
 

@@ -24,16 +24,33 @@ model User {
 }
 
 model Employee {
-  id          Int       @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   name        String
   department  String
   designation String
-  joinDate    DateTime  @default(now())
+  joinDate    DateTime     @default(now())
   salary      Float
-  status      String    @default("ACTIVE")
-  user        User?     @relation(fields: [userId], references: [id])
+  status      String       @default("ACTIVE")
+  user        User?        @relation(fields: [userId], references: [id])
   userId      Int?
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  attendances Attendance[]
+}
+
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId Int
+  date       DateTime
+  checkIn    DateTime?
+  checkOut   DateTime?
+  totalHours Float?
+  status     String   @default("PRESENT")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([employeeId])
+  @@unique([employeeId, date])
 }
 
