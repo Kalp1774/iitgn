@@ -1,4 +1,4 @@
-# HRMS Backend – Part 4: Leave Management Module
+# HRMS Backend – Part 5: Payroll & Salary Computation
 
 ## Setup
 
@@ -28,12 +28,16 @@ docker-compose exec backend npx prisma migrate dev --name add_attendance
 # Add Leave model migration
 docker-compose exec backend npx prisma migrate dev --name add_leave_module
 
+# Add Payroll model migration
+docker-compose exec backend npx prisma migrate dev --name add_payroll
+
 # Or run all commands in one go:
 docker-compose up -d postgres
 docker-compose exec backend npx prisma migrate dev --name init_auth
 docker-compose exec backend npx prisma migrate dev --name add_employee
 docker-compose exec backend npx prisma migrate dev --name add_attendance
 docker-compose exec backend npx prisma migrate dev --name add_leave_module
+docker-compose exec backend npx prisma migrate dev --name add_payroll
 ```
 
 **Option B: Run migrations locally (if you have Node.js installed)**
@@ -45,6 +49,7 @@ npx prisma migrate dev --name init_auth
 npx prisma migrate dev --name add_employee
 npx prisma migrate dev --name add_attendance
 npx prisma migrate dev --name add_leave_module
+npx prisma migrate dev --name add_payroll
 ```
 
 ### 3. Start the backend
@@ -217,6 +222,42 @@ docker-compose up --build
     -Method PUT `
     -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
     -Body '{"status":"REJECTED","reviewedBy":1}'
+  ```
+
+### Payroll Management (All endpoints require JWT authentication)
+
+- `POST /api/payroll/generate` - Generate payroll for an employee for a month
+  ```powershell
+  # Generate payroll for November 2025
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll/generate" `
+    -Method POST `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"employeeId":1,"month":"2025-11"}'
+  ```
+
+- `GET /api/payroll` - Get payroll records (with optional filters)
+  ```powershell
+  # Get all payrolls
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get payrolls for a specific employee
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll?employeeId=1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get payroll for a specific month
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll?month=2025-11" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+
+  # Get payroll for employee and month
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll?employeeId=1&month=2025-11" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/payroll/:id` - Get payslip by payroll ID
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/payroll/1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
   ```
 
 ## User Roles
