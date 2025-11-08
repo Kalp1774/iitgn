@@ -1,4 +1,4 @@
-# HRMS Backend – Part 5: Payroll & Salary Computation
+# HRMS Backend – Part 6: Reports & Analytics + Payslip PDF Export
 
 ## Setup
 
@@ -52,7 +52,22 @@ npx prisma migrate dev --name add_leave_module
 npx prisma migrate dev --name add_payroll
 ```
 
-### 3. Start the backend
+### 3. Install new dependencies (for Part 6)
+
+After adding the new dependencies (pdfkit, dayjs, json2csv) to package.json, rebuild the Docker image:
+
+```powershell
+# Install dependencies
+docker-compose run --rm backend npm install
+
+# Rebuild image
+docker-compose build --no-cache backend
+
+# Restart services
+docker-compose up -d
+```
+
+### 4. Start the backend
 
 ```bash
 docker-compose up
@@ -260,6 +275,35 @@ docker-compose up --build
     -Headers @{ "Authorization" = "Bearer $token" }
   ```
 
+### Reports & Analytics (All endpoints require JWT authentication)
+
+- `GET /api/reports/attendance-summary` - Get attendance summary for a date range
+  ```powershell
+  # Get attendance summary for November 2025
+  Invoke-RestMethod -Uri "http://localhost:4000/api/reports/attendance-summary?from=2025-11-01&to=2025-11-30" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/reports/payroll-summary` - Get payroll summary for a month
+  ```powershell
+  # Get payroll summary for November 2025
+  Invoke-RestMethod -Uri "http://localhost:4000/api/reports/payroll-summary?month=2025-11" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+### Payslip PDF Export (All endpoints require JWT authentication)
+
+- `GET /api/payslip/:id/pdf` - Download payslip as PDF
+  ```powershell
+  # Download payslip PDF (saves to file)
+  Invoke-WebRequest -Uri "http://localhost:4000/api/payslip/1/pdf" `
+    -Headers @{ "Authorization" = "Bearer $token" } `
+    -OutFile "payslip-1.pdf"
+
+  # Or open in browser (will download automatically)
+  # http://localhost:4000/api/payslip/1/pdf
+  ```
+
 ## User Roles
 
 - `ADMIN` - Full access
@@ -272,6 +316,8 @@ docker-compose up --build
 * PostgreSQL + Prisma ORM
 * JWT Authentication (jsonwebtoken)
 * Password Hashing (bcryptjs)
+* PDF Generation (pdfkit)
+* Date Handling (dayjs)
 * Docker for local development
 
 ## Development Commands
