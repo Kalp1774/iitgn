@@ -1,4 +1,4 @@
-# HRMS Backend – Part 1: Authentication & User Model
+# HRMS Backend – Part 2: Employee CRUD Module
 
 ## Setup
 
@@ -19,8 +19,13 @@ docker-compose up -d postgres
 # Wait a few seconds for postgres to be ready, then run migrations
 docker-compose exec backend npx prisma migrate dev --name init_auth
 
+# Add Employee model migration
+docker-compose exec backend npx prisma migrate dev --name add_employee
+
 # Or run all commands in one go:
-docker-compose up -d postgres && sleep 5 && docker-compose exec backend npx prisma migrate dev --name init_auth
+docker-compose up -d postgres
+docker-compose exec backend npx prisma migrate dev --name init_auth
+docker-compose exec backend npx prisma migrate dev --name add_employee
 ```
 
 **Option B: Run migrations locally (if you have Node.js installed)**
@@ -29,6 +34,7 @@ docker-compose up -d postgres && sleep 5 && docker-compose exec backend npx pris
 npm install
 npx prisma generate
 npx prisma migrate dev --name init_auth
+npx prisma migrate dev --name add_employee
 ```
 
 ### 3. Start the backend
@@ -67,6 +73,43 @@ docker-compose up --build
 - `GET /api/auth/profile` - Get user profile (protected)
   ```bash
   curl -H "Authorization: Bearer <token>" http://localhost:4000/api/auth/profile
+  ```
+
+### Employee Management (All endpoints require JWT authentication)
+
+- `GET /api/employees` - Get all employees
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/employees" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `GET /api/employees/:id` - Get employee by ID
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/employees/1" `
+    -Headers @{ "Authorization" = "Bearer $token" }
+  ```
+
+- `POST /api/employees` - Create new employee
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/employees" `
+    -Method POST `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"name":"John Doe","department":"IT","designation":"Developer","salary":50000,"status":"ACTIVE"}'
+  ```
+
+- `PUT /api/employees/:id` - Update employee
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/employees/1" `
+    -Method PUT `
+    -Headers @{ "Authorization" = "Bearer $token"; "Content-Type" = "application/json" } `
+    -Body '{"salary":60000,"status":"ACTIVE"}'
+  ```
+
+- `DELETE /api/employees/:id` - Delete employee
+  ```powershell
+  Invoke-RestMethod -Uri "http://localhost:4000/api/employees/1" `
+    -Method DELETE `
+    -Headers @{ "Authorization" = "Bearer $token" }
   ```
 
 ## User Roles
