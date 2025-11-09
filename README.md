@@ -579,5 +579,8 @@ Potential features for future development:
 - Uses industry-standard security practices
 
 ---
+## Video link:
+- https://youtu.be/yAM3_hxGqdY?si=RoUeqT_OpPDNGuql
+---
 
 **Happy Coding! 🚀**
